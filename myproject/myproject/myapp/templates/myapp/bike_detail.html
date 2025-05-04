@@ -1,0 +1,20 @@
+<!-- /myproject/myapp/templates/myapp/bike_detail.html -->
+{% extends 'myapp/base.html' %}
+{% block title %}{{ bike.name }} Details{% endblock %}
+{% block content %}
+    <h1 class="text-3xl font-bold text-gray-800 mb-4">{{ bike.name }}</h1>
+    <div class="bg-white p-6 rounded shadow">
+        <p class="text-lg text-gray-700"><strong>Hourly Rate:</strong> ${{ bike.hourly_rate }}</p>
+        <p class="text-lg text-gray-700"><strong>Available:</strong> {% if bike.is_available %}<span class="text-green-600">Yes</span>{% else %}<span class="text-red-600">No</span>{% endif %}</p>
+        <p class="text-lg text-gray-700"><strong>Description:</strong> {{ bike.description }}</p>
+        {% if bike.image %}
+            <img src="{{ bike.image.url }}" alt="{{ bike.name }}" class="mt-4 w-full max-w-md rounded">
+        {% endif %}
+        {% if bike.is_available and user.is_authenticated %}
+            <a href="{% url 'rent_bike' bike.pk %}" class="inline-block mt-4 bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition">Rent Now</a>
+        {% endif %}
+    </div>
+    <div class="mt-6">
+        <a href="{% url 'bike_list' %}" class="text-blue-600 hover:underline">Back to Bike List</a>
+    </div>
+{% endblock %}
