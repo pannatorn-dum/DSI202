@@ -16,7 +16,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.django
-    container_name: django
+    container_name: projectdjg
     volumes:
       - .:/usr/src/app:rw
     ports:
@@ -35,7 +35,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.jupyter
-    container_name: jupyter
+    container_name: projectjpt
     working_dir: /usr/src/app/myproject
     volumes:
       - .:/usr/src/app:rw
