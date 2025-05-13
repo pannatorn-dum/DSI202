@@ -1,0 +1,194 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ product.name }} - Details</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #eef8e9;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            display: flex;
+            padding: 40px;
+            gap: 50px;
+        }
+        .left-panel {
+            flex: 1;
+        }
+        .left-panel .main-image {
+            width: 100%;
+            height: 400px;
+            background-color: #cde2c1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2e7d32;
+            font-size: 24px;
+            border-radius: 10px;
+        }
+        .thumbnails {
+            display: flex;
+            margin-top: 10px;
+            gap: 10px;
+        }
+        .thumbnails div {
+            width: 60px;
+            height: 60px;
+            background-color: #d6eac7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 5px;
+        }
+        .right-panel {
+            flex: 1;
+            background-color: #e9f4dc;
+            padding: 30px;
+            border-radius: 10px;
+        }
+        .product-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2e7d32;
+        }
+        .price {
+            font-size: 22px;
+            color: #b74c00;
+            margin-top: 10px;
+        }
+        .old-price {
+            text-decoration: line-through;
+            color: gray;
+            margin-left: 10px;
+        }
+        .discount {
+            color: #d84315;
+            margin-left: 10px;
+        }
+        .rating {
+            margin-top: 10px;
+            color: #ffb300;
+        }
+        .sold {
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .color-select {
+            margin: 10px 0;
+        }
+        .error-msg {
+            color: red;
+        }
+        .quantity {
+            margin-top: 10px;
+        }
+        .quantity button {
+            background-color: #a5d6a7;
+            border: none;
+            padding: 6px 10px;
+            margin: 0 5px;
+            font-weight: bold;
+        }
+        .actions {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        .add-to-cart {
+            background-color: #66bb6a;
+            border: 2px solid #2e7d32;
+            padding: 10px 20px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .buy-now {
+            background-color: #ffb74d;
+            border: none;
+            padding: 10px 20px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .nav-btn {
+            position: fixed;
+            bottom: 40px;
+            background-color: #2e7d32;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        .left-btn {
+            left: 20px;
+        }
+        .right-btn {
+            right: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="left-panel">
+        <div class="main-image">Image</div>
+        <div class="thumbnails">
+            <div>Img1</div>
+            <div>Img2</div>
+            <div>Img3</div>
+            <div>Img4</div>
+        </div>
+    </div>
+    <div class="right-panel">
+        <div class="product-title">{{ product.name }}</div>
+        <div>{{ product.description }}</div>
+
+        <div class="price">
+            ${{ product.discounted_price }}
+            <span class="old-price">${{ product.original_price }}</span>
+            <span class="discount">(-{{ product.discount_percent }}%)</span>
+        </div>
+
+        <div class="rating">⭐ {{ product.rating }} | {{ product.rating_count }} ratings</div>
+        <div class="sold">Sold: {{ product.sold }} pieces</div>
+
+        <div class="color-select">
+            <select>
+                <option>Select Color</option>
+                {% for color in product.available_colors %}
+                    <option>{{ color }}</option>
+                {% endfor %}
+            </select>
+            <span class="error-msg">กรุณาเลือกตัวเลือกสินค้าก่อน</span>
+        </div>
+
+        <div class="quantity">
+            <button>-</button>
+            <input type="number" value="1" style="width: 40px;">
+            <button>+</button>
+            <span>({{ product.stock }} in stock)</span>
+        </div>
+
+        <div class="actions">
+            <button class="add-to-cart">Add to Cart</button>
+            <button class="buy-now">Buy Now</button>
+        </div>
+    </div>
+</div>
+
+<div class="nav-btn left-btn">←</div>
+<div class="nav-btn right-btn">→</div>
+
+</body>
+</html>

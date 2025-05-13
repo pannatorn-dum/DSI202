@@ -1,0 +1,74 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Treevaq{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f1f9f1;
+            margin: 0;
+            padding: 0;
+        }
+        .navbar {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .navbar input[type="text"] {
+            width: 400px;
+            padding: 8px;
+            border-radius: 5px;
+            border: none;
+        }
+        .menu {
+            background-color: #5dc45d;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 10px;
+        }
+        .menu a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar + Menu -->
+    <div class="navbar">
+        <div><strong>🌱 Treevaq</strong></div>
+        <input type="text" placeholder="Search for eco-friendly products...">
+        <div>
+            <a href="#" style="color:white;">Profile</a> |
+            <a href="#" style="color:white;">Order</a>
+            <select>
+                <option>EN</option>
+                <option>TH</option>
+            </select>
+        </div>
+    </div>
+    <div class="menu">
+        <a href="{% url 'homepage' %}">All</a>
+        <a href="#">Best Sellers</a>
+        <a href="#">Sustainable Licenses</a>
+        <a href="#">Eco Promotions</a>
+        <a href="#">Green Services</a>
+        <a href="#">Recycled Electronics</a>
+        <a href="#">Mystery Box</a>
+        <a href="#">Sell</a>
+    </div>
+
+    <!-- Main content -->
+    <div class="content">
+        {% block content %}
+        {% endblock %}
+    </div>
+</body>
+</html>

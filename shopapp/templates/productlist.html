@@ -1,0 +1,20 @@
+<!-- shopapp/templates/product_list.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>สินค้าทั้งหมด | My Shop</title>
+</head>
+<body>
+    <h1>สินค้าทั้งหมด</h1>
+    <ul>
+        {% for product in products %}
+            <li>
+                <strong>{{ product.name }}</strong> — ราคา {{ product.price }} บาท
+            </li>
+        {% empty %}
+            <li>ยังไม่มีสินค้า</li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'homepage' %}">กลับหน้าแรก</a>
+</body>
+</html>

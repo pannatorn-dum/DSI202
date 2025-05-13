@@ -1,0 +1,245 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Treevaq - Eco Products</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f9f1;
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        body.dark {
+            background-color: #121212;
+            color: #f0f0f0;
+        }
+        .navbar {
+            background-color: #2e7d32;
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .navbar form {
+            flex: 1;
+            margin: 0 20px;
+        }
+        .navbar input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+        }
+        .menu {
+            background-color: #43a047;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            padding: 10px;
+        }
+        .menu a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: background-color 0.3s;
+        }
+        .menu a:hover {
+            background-color: #2e7d32;
+        }
+        .banner {
+            background-color: #c8e6c9;
+            padding: 20px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 20px;
+        }
+        .categories, .featured {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 30px 20px;
+            flex-wrap: wrap;
+        }
+        .category, .product {
+            background-color: #e8f5e9;
+            padding: 20px;
+            width: 200px;
+            border-radius: 16px;
+            text-align: center;
+            color: #333;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+        .product:hover {
+            transform: translateY(-5px);
+            background-color: #dcedc8;
+        }
+        .product img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 10px;
+        }
+        h2 {
+            text-align: center;
+            color: #2e7d32;
+        }
+        .dark .navbar,
+        .dark .menu,
+        .dark .banner,
+        .dark .category,
+        .dark .product {
+            background-color: #333 !important;
+            color: #fff !important;
+        }
+        .dark .menu a {
+            color: #fff;
+        }
+        .language-select, .toggle-dark {
+            margin-left: 10px;
+            padding: 6px 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .language-toggle {
+            display: flex;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div><a href="{% url 'homepage' %}" style="color:white; text-decoration: none;"><strong>🌱 Treevaq</strong></a></div>
+        <form method="get" action="{% url 'homepage' %}">
+            <input type="text" id="searchInput" name="q" placeholder="Search for eco-friendly products..." value="{{ request.GET.q }}">
+        </form>
+        <div class="language-toggle">
+            <select id="languageSelect" class="language-select">
+                <option value="en">EN</option>
+                <option value="th">TH</option>
+            </select>
+            <button id="toggleDark" class="toggle-dark">🌙</button>
+        </div>
+    </div>
+
+    <div class="menu">
+        <a href="#" data-key="all">All</a>
+        <a href="#" data-key="best">Best Sellers</a>
+        <a href="#" data-key="license">Sustainable Licenses</a>
+        <a href="#" data-key="promo">Eco Promotions</a>
+        <a href="#" data-key="services">Green Services</a>
+        <a href="#" data-key="recycled">Recycled Electronics</a>
+        <a href="#" data-key="mystery">Mystery Box</a>
+        <a href="#" data-key="sell">Sell</a>
+    </div>
+
+    <div class="banner" id="bannerText">
+        🌿 Special Discount on Eco-friendly Products! 🌍
+    </div>
+
+    <div class="categories">
+        <div class="category" data-key="cat1">Sustainable Options</div>
+        <div class="category" data-key="cat2">Organic Groceries</div>
+        <div class="category" data-key="cat3">Zero Waste Products</div>
+    </div>
+
+    <h2 data-key="featured">Featured Eco-Friendly Products</h2>
+
+    <div class="featured">
+        {% for product in Products %}
+            <a href="{% url 'product_detail' product.id %}" class="product">
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                {% endif %}
+                <div>{{ product.name }}</div>
+            </a>
+        {% empty %}
+            <p style="text-align: center;">No products available.</p>
+        {% endfor %}
+    </div>
+
+    <script>
+        const translations = {
+            en: {
+                all: "All",
+                best: "Best Sellers",
+                license: "Sustainable Licenses",
+                promo: "Eco Promotions",
+                services: "Green Services",
+                recycled: "Recycled Electronics",
+                mystery: "Mystery Box",
+                sell: "Sell",
+                cat1: "Sustainable Options",
+                cat2: "Organic Groceries",
+                cat3: "Zero Waste Products",
+                featured: "Featured Eco-Friendly Products",
+                banner: "\ud83c\udf3f Special Discount on Eco-friendly Products! \ud83c\udf0d",
+                placeholder: "Search for eco-friendly products..."
+            },
+            th: {
+                all: "\u0e17\u0e31\u0e07\u0e2b\u0e21\u0e14",
+                best: "\u0e2a\u0e34\u0e19\u0e04\u0e49\u0e32\u0e02\u0e32\u0e22\u0e14\u0e35",
+                license: "\u0e43\u0e1a\u0e2d\u0e19\u0e38\u0e0d\u0e32\u0e15\u0e2a\u0e34\u0e48\u0e07\u0e41\u0e27\u0e14\u0e25\u0e49\u0e2d\u0e21",
+                promo: "\u0e42\u0e1b\u0e23\u0e42\u0e21\u0e0a\u0e31\u0e19\u0e23\u0e31\u0e01\u0e29\u0e4c\u0e42\u0e25\u0e01",
+                services: "\u0e1a\u0e23\u0e34\u0e01\u0e32\u0e23\u0e2a\u0e35\u0e40\u0e02\u0e35\u0e22\u0e27",
+                recycled: "\u0e2d\u0e34\u0e40\u0e25\u0e47\u0e01\u0e17\u0e23\u0e2d\u0e34\u0e01\u0e2a\u0e4c\u0e23\u0e35\u0e44\u0e0b\u0e40\u0e04\u0e34\u0e25",
+                mystery: "\u0e01\u0e25\u0e48\u0e2d\u0e07\u0e2a\u0e38\u0e48\u0e21",
+                sell: "\u0e02\u0e32\u0e22",
+                cat1: "\u0e15\u0e31\u0e27\u0e40\u0e25\u0e37\u0e2d\u0e01\u0e17\u0e35\u0e48\u0e22\u0e31\u0e48\u0e07\u0e22\u0e37\u0e19",
+                cat2: "\u0e02\u0e2d\u0e07\u0e0a\u0e33\u0e2d\u0e2d\u0e23\u0e4c\u0e41\u0e01\u0e19\u0e34\u0e01",
+                cat3: "\u0e2a\u0e34\u0e19\u0e04\u0e49\u0e32\u0e1b\u0e25\u0e2d\u0e14\u0e02\u0e22\u0e30",
+                featured: "\u0e2a\u0e34\u0e19\u0e04\u0e49\u0e32\u0e23\u0e31\u0e01\u0e29\u0e4c\u0e42\u0e25\u0e01\u0e41\u0e19\u0e30\u0e19\u0e33\u0e40\u0e2a\u0e19\u0e2d",
+                banner: "\ud83c\udf3f \u0e2a\u0e48\u0e27\u0e19\u0e25\u0e14\u0e1e\u0e34\u0e40\u0e28\u0e2a\u0e33\u0e2b\u0e23\u0e31\u0e1a\u0e2a\u0e34\u0e19\u0e04\u0e49\u0e32\u0e23\u0e31\u0e01\u0e29\u0e4c\u0e42\u0e25\u0e01! \ud83c\udf0d",
+                placeholder: "\u0e04\u0e49\u0e19\u0e2b\u0e32\u0e2a\u0e34\u0e19\u0e04\u0e49\u0e32\u0e23\u0e31\u0e01\u0e29\u0e4c\u0e42\u0e25\u0e01..."
+            }
+        };
+
+        const languageSelect = document.getElementById("languageSelect");
+        const toggleDark = document.getElementById("toggleDark");
+
+        function setLanguage(lang) {
+            localStorage.setItem("lang", lang);
+            document.querySelectorAll("[data-key]").forEach(el => {
+                const key = el.getAttribute("data-key");
+                el.textContent = translations[lang][key];
+            });
+            document.getElementById("bannerText").textContent = translations[lang].banner;
+            document.getElementById("searchInput").placeholder = translations[lang].placeholder;
+            languageSelect.value = lang;
+        }
+
+        function toggleDarkMode() {
+            const isDark = document.body.classList.toggle("dark");
+            localStorage.setItem("darkMode", isDark ? "on" : "off");
+            toggleDark.textContent = isDark ? "☀️" : "🌙";
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const savedLang = localStorage.getItem("lang") || "en";
+            const dark = localStorage.getItem("darkMode") === "on";
+
+            setLanguage(savedLang);
+            if (dark) {
+                document.body.classList.add("dark");
+                toggleDark.textContent = "☀️";
+            }
+
+            languageSelect.addEventListener("change", (e) => {
+                setLanguage(e.target.value);
+            });
+
+            toggleDark.addEventListener("click", toggleDarkMode);
+        });
+    </script>
+</body>
+</html>
