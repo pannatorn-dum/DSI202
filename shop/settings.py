@@ -20,6 +20,8 @@ INSTALLED_APPS = [
     'shopapp',  # << แอปของคุณ
 ]
 
+LOGIN_REDIRECT_URL = '/'  # เปลี่ยนเป็น URL ของหน้า homepage
+LOGIN_URL = 'account_login'  # ชื่อ URL ของหน้าล็อกอิน
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -35,7 +37,7 @@ ROOT_URLCONF = 'shop.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'shopapp', 'templates')],
+        'DIRS': [os.path.join(BASE_DIR, 'shopapp', 'templates')],  # ชี้ไปที่โฟลเดอร์ templates
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -47,6 +49,7 @@ TEMPLATES = [
         },
     },
 ]
+
 
 WSGI_APPLICATION = 'shop.wsgi.application'
 

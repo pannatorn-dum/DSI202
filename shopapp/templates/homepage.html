@@ -22,12 +22,14 @@
             color: white;
             padding: 15px 30px;
             display: flex;
+            flex-wrap: wrap;
             align-items: center;
             justify-content: space-between;
+            gap: 10px;
         }
         .navbar form {
             flex: 1;
-            margin: 0 20px;
+            min-width: 200px;
         }
         .navbar input[type="text"] {
             width: 100%;
@@ -35,24 +37,16 @@
             border-radius: 8px;
             border: none;
         }
-        .menu {
-            background-color: #43a047;
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 15px;
-            padding: 10px;
-        }
-        .menu a {
+        .navbar a {
             color: white;
             text-decoration: none;
             font-weight: 600;
-            padding: 8px 12px;
+            padding: 6px 10px;
             border-radius: 8px;
             transition: background-color 0.3s;
         }
-        .menu a:hover {
-            background-color: #2e7d32;
+        .navbar a:hover {
+            background-color: #1b5e20;
         }
         .banner {
             background-color: #c8e6c9;
@@ -94,14 +88,13 @@
             color: #2e7d32;
         }
         .dark .navbar,
-        .dark .menu,
         .dark .banner,
         .dark .category,
         .dark .product {
             background-color: #333 !important;
             color: #fff !important;
         }
-        .dark .menu a {
+        .dark .navbar a {
             color: #fff;
         }
         .language-select, .toggle-dark {
@@ -115,33 +108,46 @@
             display: flex;
             align-items: center;
         }
+        .menu-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            width: 100%;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
-    <div class="navbar">
-        <div><a href="{% url 'homepage' %}" style="color:white; text-decoration: none;"><strong>🌱 Treevaq</strong></a></div>
-        <form method="get" action="{% url 'homepage' %}">
-            <input type="text" id="searchInput" name="q" placeholder="Search for eco-friendly products..." value="{{ request.GET.q }}">
-        </form>
-        <div class="language-toggle">
-            <select id="languageSelect" class="language-select">
-                <option value="en">EN</option>
-                <option value="th">TH</option>
-            </select>
-            <button id="toggleDark" class="toggle-dark">🌙</button>
-        </div>
+<div class="navbar">
+    <!-- ด้านซ้าย -->
+    <div style="display: flex; align-items: center; gap: 15px;">
+        <a href="{% url 'homepage' %}" style="color:white; text-decoration: none; font-weight: bold;">🌱 Treevaq</a>
     </div>
 
-    <div class="menu">
+    <!-- ตรงกลาง: เมนู + ช่องค้นหา -->
+    <div style="flex: 1; display: flex; align-items: center; gap: 15px; flex-wrap: wrap; justify-content: center;">
         <a href="#" data-key="all">All</a>
         <a href="#" data-key="best">Best Sellers</a>
-        <a href="#" data-key="license">Sustainable Licenses</a>
         <a href="#" data-key="promo">Eco Promotions</a>
-        <a href="#" data-key="services">Green Services</a>
-        <a href="#" data-key="recycled">Recycled Electronics</a>
-        <a href="#" data-key="mystery">Mystery Box</a>
         <a href="#" data-key="sell">Sell</a>
+
+        <form method="get" action="{% url 'homepage' %}" style="margin: 0;">
+            <input type="text" id="searchInput" name="q" placeholder="Search..." value="{{ request.GET.q }}"
+                   style="width: 250px; padding: 8px; border-radius: 8px; border: none;">
+        </form>
     </div>
+
+    <!-- ด้านขวา: Language / Theme / Account / Cart -->
+    <div style="display: flex; align-items: center; gap: 10px;">
+        <select id="languageSelect" class="language-select">
+            <option value="en">EN</option>
+            <option value="th">TH</option>
+        </select>
+        <button id="toggleDark" class="toggle-dark">🌙</button>
+        <a href="{% url 'account_login' %}" style="color: white; font-size: 20px;">👤</a>
+        <a href="{% url 'homepage' %}" style="color: white; font-size: 20px;">🛒</a>
+    </div>
+</div>
 
     <div class="banner" id="bannerText">
         🌿 Special Discount on Eco-friendly Products! 🌍
@@ -183,24 +189,24 @@
                 cat2: "Organic Groceries",
                 cat3: "Zero Waste Products",
                 featured: "Featured Eco-Friendly Products",
-                banner: "\ud83c\udf3f Special Discount on Eco-friendly Products! \ud83c\udf0d",
+                banner: "🌿 Special Discount on Eco-friendly Products! 🌍",
                 placeholder: "Search for eco-friendly products..."
             },
             th: {
-                all: "\u0e17\u0e31\u0e07\u0e2b\u0e21\u0e14",
-                best: "\u0e2a\u0e34\u0e19\u0e04\u0e49\u0e32\u0e02\u0e32\u0e22\u0e14\u0e35",
-                license: "\u0e43\u0e1a\u0e2d\u0e19\u0e38\u0e0d\u0e32\u0e15\u0e2a\u0e34\u0e48\u0e07\u0e41\u0e27\u0e14\u0e25\u0e49\u0e2d\u0e21",
-                promo: "\u0e42\u0e1b\u0e23\u0e42\u0e21\u0e0a\u0e31\u0e19\u0e23\u0e31\u0e01\u0e29\u0e4c\u0e42\u0e25\u0e01",
-                services: "\u0e1a\u0e23\u0e34\u0e01\u0e32\u0e23\u0e2a\u0e35\u0e40\u0e02\u0e35\u0e22\u0e27",
-                recycled: "\u0e2d\u0e34\u0e40\u0e25\u0e47\u0e01\u0e17\u0e23\u0e2d\u0e34\u0e01\u0e2a\u0e4c\u0e23\u0e35\u0e44\u0e0b\u0e40\u0e04\u0e34\u0e25",
-                mystery: "\u0e01\u0e25\u0e48\u0e2d\u0e07\u0e2a\u0e38\u0e48\u0e21",
-                sell: "\u0e02\u0e32\u0e22",
-                cat1: "\u0e15\u0e31\u0e27\u0e40\u0e25\u0e37\u0e2d\u0e01\u0e17\u0e35\u0e48\u0e22\u0e31\u0e48\u0e07\u0e22\u0e37\u0e19",
-                cat2: "\u0e02\u0e2d\u0e07\u0e0a\u0e33\u0e2d\u0e2d\u0e23\u0e4c\u0e41\u0e01\u0e19\u0e34\u0e01",
-                cat3: "\u0e2a\u0e34\u0e19\u0e04\u0e49\u0e32\u0e1b\u0e25\u0e2d\u0e14\u0e02\u0e22\u0e30",
-                featured: "\u0e2a\u0e34\u0e19\u0e04\u0e49\u0e32\u0e23\u0e31\u0e01\u0e29\u0e4c\u0e42\u0e25\u0e01\u0e41\u0e19\u0e30\u0e19\u0e33\u0e40\u0e2a\u0e19\u0e2d",
-                banner: "\ud83c\udf3f \u0e2a\u0e48\u0e27\u0e19\u0e25\u0e14\u0e1e\u0e34\u0e40\u0e28\u0e2a\u0e33\u0e2b\u0e23\u0e31\u0e1a\u0e2a\u0e34\u0e19\u0e04\u0e49\u0e32\u0e23\u0e31\u0e01\u0e29\u0e4c\u0e42\u0e25\u0e01! \ud83c\udf0d",
-                placeholder: "\u0e04\u0e49\u0e19\u0e2b\u0e32\u0e2a\u0e34\u0e19\u0e04\u0e49\u0e32\u0e23\u0e31\u0e01\u0e29\u0e4c\u0e42\u0e25\u0e01..."
+                all: "ทั้งหมด",
+                best: "สินค้าขายดี",
+                license: "ใบอนุญาตสิ่งแวดล้อม",
+                promo: "โปรโมชั่นรักษ์โลก",
+                services: "บริการสีเขียว",
+                recycled: "อิเล็กทรอนิกส์รีไซเคิล",
+                mystery: "กล่องสุ่ม",
+                sell: "ขาย",
+                cat1: "ตัวเลือกที่ยั่งยืน",
+                cat2: "ของชำออร์แกนิก",
+                cat3: "สินค้าปลอดขยะ",
+                featured: "สินค้ารักษ์โลกแนะนำ",
+                banner: "🌿 ส่วนลดพิเศษสำหรับสินค้ารักษ์โลก! 🌍",
+                placeholder: "ค้นหาสินค้ารักษ์โลก..."
             }
         };
 

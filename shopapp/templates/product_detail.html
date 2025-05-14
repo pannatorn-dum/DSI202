@@ -139,6 +139,14 @@
     </style>
 </head>
 <body>
+    
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-success">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
 
 <div class="container">
     <div class="left-panel">
