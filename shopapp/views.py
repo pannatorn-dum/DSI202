@@ -13,7 +13,19 @@ def homepage(request):
         products = Product.objects.filter(name__icontains=query)
     else:
         products = Product.objects.all()[:4]
+
+    print("Products in homepage:", products)  # เช็คใน terminal/log
+
     return render(request, 'homepage.html', {'products': products})
+
+
+def product_detail(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    return render(request, 'shopapp/product_detail.html', {'product': product})
+
+def product_list(request):
+    products = Product.objects.all()
+    return render(request, 'product_list.html', {'products': products})
 
 def login_view(request):
     if request.method == 'POST':
@@ -25,7 +37,7 @@ def login_view(request):
             return redirect('homepage')
         else:
             messages.error(request, "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง")
-    return render(request, 'auth/login.html')
+    return render(request, 'account/login.html')
 
 def signup_view(request):
     form = UserCreationForm(request.POST or None)
@@ -33,7 +45,7 @@ def signup_view(request):
         user = form.save()
         login(request, user)
         return redirect('homepage')
-    return render(request, 'accounts/signup.html', {'form': form})
+    return render(request, 'account/signup.html', {'form': form})
 
 def forgot_password_view(request):
     form = PasswordResetForm(request.POST or None)
@@ -44,7 +56,7 @@ def forgot_password_view(request):
             email_template_name='accounts/password_reset_email.html',  # ถ้ามี
         )
         return redirect('password_reset_done')
-    return render(request, 'accounts/forgot_password.html', {'form': form})
+    return render(request, 'account/forgot_password.html', {'form': form})
 
 def logout_view(request):
     logout(request)

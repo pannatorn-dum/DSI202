@@ -3,17 +3,9 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
-from shopapp import views  # ✅ ต้อง import views จาก shopapp
-
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('shopapp.urls')),  # หน้า homepage, product list, etc.
-    
-    # 🔻 Custom authentication views
-    path('login/', views.login_view, name='login'),
-    path('logout/', views.logout_view, name='logout'),
-    path('signup/', views.signup_view, name='signup'),
-    path('forgot-password/', views.forgot_password_view, name='forgot_password'),
+    path('', include('shopapp.urls')),  # รวมทุก url ของแอป shopapp ไว้ที่ root
 ]
 
 if settings.DEBUG:
