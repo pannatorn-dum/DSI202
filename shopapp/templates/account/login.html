@@ -4,17 +4,17 @@
 <style>
   .login-container {
     max-width: 400px;
-    margin: 50px auto;
+    margin: 40px auto;
     padding: 30px;
-    background: #eaf6ea; /* สีเขียวอ่อนเข้ากับธีม */
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+    background: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   }
   .login-container h2 {
     text-align: center;
     margin-bottom: 25px;
-    color: #2e7d32; /* สีเขียวเข้ม */
+    color: #333;
   }
   form {
     display: flex;
@@ -28,30 +28,22 @@
   form input[type="password"] {
     padding: 12px;
     margin-top: 5px;
-    border: 1px solid #4caf50;
-    border-radius: 8px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
     font-size: 1rem;
-    transition: border-color 0.3s ease;
-  }
-  form input[type="text"]:focus,
-  form input[type="email"]:focus,
-  form input[type="password"]:focus {
-    border-color: #2e7d32;
-    outline: none;
   }
   form button {
-    background-color: #4caf50;
+    background-color: #007bff;
     border: none;
     color: white;
     padding: 12px;
-    border-radius: 8px;
+    border-radius: 6px;
     font-size: 1.1rem;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    margin-top: 10px;
   }
   form button:hover {
-    background-color: #388e3c;
+    background-color: #0056b3;
   }
   .error-message {
     color: #d93025;
@@ -61,12 +53,12 @@
   .links {
     text-align: center;
     margin-top: 20px;
-    font-weight: 600;
   }
   .links a {
-    color: #4caf50;
+    color: #007bff;
     text-decoration: none;
     margin: 0 10px;
+    font-weight: 500;
   }
   .links a:hover {
     text-decoration: underline;

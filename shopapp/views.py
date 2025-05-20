@@ -12,10 +12,6 @@ def homepage(request):
 
     return render(request, 'homepage.html', {'products': products})
 
-def homepage(request):
-    products = Product.objects.all()  # ดึงสินค้าทั้งหมด
-    return render(request, 'homepage.html', {'Products': products})  # ส่งไปให้ template
-
 def product_list(request):
     products = Product.objects.all()
     return render(request, 'product_list.html', {'products': products})
