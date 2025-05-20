@@ -18,34 +18,42 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.sites',  # จำเป็นสำหรับ allauth
 
-    # allauth apps
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
+    # ถ้าใช้ allauth ให้เก็บไว้
+    # 'django.contrib.sites',
+    # 'allauth',
+    # 'allauth.account',
+    # 'allauth.socialaccount',
 
-    # แอปของคุณ
-    'shopapp',
-]
-
-SITE_ID = 1  # จำเป็นสำหรับ allauth
-
-AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',  # สำหรับ admin
-    'allauth.account.auth_backends.AuthenticationBackend',  # สำหรับ allauth
+    'shopapp',  # แอปของคุณ
 ]
 
 # -------------------------
-# Allauth Settings (อัปเดตใหม่)
+# Email Backend (ส่งทาง console สำหรับ dev)
+# -------------------------
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# ถ้าจะใช้จริงให้ใช้ SMTP เช่น:
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = 'you@example.com'
+# EMAIL_HOST_PASSWORD = 'your-password'
+
+# -------------------------
+# Authentication Backends (ใช้ default)
+# -------------------------
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+# -------------------------
+# Login/Logout/Reset Redirect URLs
 # -------------------------
 LOGIN_REDIRECT_URL = '/'
-ACCOUNT_LOGOUT_REDIRECT_URL = '/'
-
-ACCOUNT_LOGIN_METHODS = {'email', 'username'}
-ACCOUNT_SIGNUP_FIELDS = ['email*', 'username*', 'password1*', 'password2*']
-
-ACCOUNT_EMAIL_VERIFICATION = 'none'  # เปลี่ยนเป็น 'mandatory' ถ้าต้องการยืนยันอีเมล
+LOGOUT_REDIRECT_URL = '/'
+LOGIN_URL = '/login/'
 
 # -------------------------
 # Middleware
@@ -56,7 +64,6 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'allauth.account.middleware.AccountMiddleware',  # ต้องใส่
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -66,12 +73,12 @@ ROOT_URLCONF = 'shop.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'shopapp', 'templates')],  # ชี้โฟลเดอร์ templates ของคุณ
+        'DIRS': [os.path.join(BASE_DIR, 'shopapp', 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
-                'django.template.context_processors.request',  # ต้องมีสำหรับ allauth
+                'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
@@ -82,7 +89,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'shop.wsgi.application'
 
 # -------------------------
-# Database (SQLite ง่าย ๆ)
+# Database
 # -------------------------
 DATABASES = {
     'default': {

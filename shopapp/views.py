@@ -1,29 +1,51 @@
-from django.shortcuts import render, get_object_or_404
-from .models import Product
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.forms import UserCreationForm, PasswordResetForm
+from django.contrib.auth.models import User
 from django.contrib import messages
-from django.shortcuts import render
+from .models import Product
 
 def homepage(request):
+    if request.user.is_authenticated:
+        messages.success(request, "ยินดีต้อนรับกลับค่ะ!")
     query = request.GET.get('q')
     if query:
         products = Product.objects.filter(name__icontains=query)
     else:
-        products = Product.objects.all()[:4]  # แสดง 4 ชิ้นแรก
-
+        products = Product.objects.all()[:4]
     return render(request, 'homepage.html', {'products': products})
 
-def product_list(request):
-    products = Product.objects.all()
-    return render(request, 'product_list.html', {'products': products})
+def login_view(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+        if user:
+            login(request, user)
+            return redirect('homepage')
+        else:
+            messages.error(request, "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง")
+    return render(request, 'auth/login.html')
 
-def product_detail(request, product_id):
-    product = get_object_or_404(Product, pk=product_id)
-    return render(request, 'product_detail.html', {'product': product})
+def signup_view(request):
+    form = UserCreationForm(request.POST or None)
+    if request.method == 'POST' and form.is_valid():
+        user = form.save()
+        login(request, user)
+        return redirect('homepage')
+    return render(request, 'accounts/signup.html', {'form': form})
 
+def forgot_password_view(request):
+    form = PasswordResetForm(request.POST or None)
+    if request.method == 'POST' and form.is_valid():
+        form.save(
+            request=request,
+            use_https=request.is_secure(),
+            email_template_name='accounts/password_reset_email.html',  # ถ้ามี
+        )
+        return redirect('password_reset_done')
+    return render(request, 'accounts/forgot_password.html', {'form': form})
 
-def homepage(request):
-    if request.user.is_authenticated:
-        # แสดงข้อความแจ้งเตือนเมื่อผู้ใช้ล็อกอินสำเร็จ
-        messages.success(request, "ยินดีต้อนรับกลับค่ะ!")  # แสดงข้อความในหน้า homepage
-    
-    return render(request, 'homepage.html')  # เรนเดอร์หน้า homepage
+def logout_view(request):
+    logout(request)
+    return redirect('homepage')

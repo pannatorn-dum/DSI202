@@ -1,0 +1,169 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sign Up - Treevaq</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f9f1;
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        body.dark {
+            background-color: #121212;
+            color: #f0f0f0;
+        }
+        .navbar {
+            background-color: #2e7d32;
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        .form-container {
+            max-width: 400px;
+            margin: 80px auto;
+            background-color: #e8f5e9;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .dark .form-container {
+            background-color: #333;
+        }
+        h2 {
+            text-align: center;
+            color: #2e7d32;
+        }
+        .dark h2 {
+            color: #a5d6a7;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        input, select {
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            width: 100%;
+        }
+        label {
+            font-weight: 600;
+            margin-bottom: 5px;
+            display: block;
+        }
+        .error {
+            color: red;
+            font-size: 0.9em;
+        }
+        button {
+            padding: 10px;
+            background-color: #2e7d32;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #1b5e20;
+        }
+        .language-select, .toggle-dark {
+            margin-left: 10px;
+            padding: 6px 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="navbar">
+    <div>
+        <a href="{% url 'homepage' %}">🌱 Treevaq</a>
+    </div>
+    <div>
+        <select id="languageSelect" class="language-select">
+            <option value="en">EN</option>
+            <option value="th">TH</option>
+        </select>
+        <button id="toggleDark" class="toggle-dark">🌙</button>
+    </div>
+</div>
+
+<div class="form-container">
+    <h2 data-key="signup">Create your Treevaq Account</h2>
+    <form method="post" novalidate>
+        {% csrf_token %}
+        {% for field in form %}
+            <div>
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                    <div class="error">{{ field.errors|striptags }}</div>
+                {% endif %}
+            </div>
+        {% endfor %}
+        <button type="submit" data-key="signupBtn">Sign Up</button>
+    </form>
+</div>
+
+<script>
+    const translations = {
+        en: {
+            signup: "Create your Treevaq Account",
+            signupBtn: "Sign Up"
+        },
+        th: {
+            signup: "สร้างบัญชี Treevaq",
+            signupBtn: "สมัครสมาชิก"
+        }
+    };
+
+    const languageSelect = document.getElementById("languageSelect");
+    const toggleDark = document.getElementById("toggleDark");
+
+    function setLanguage(lang) {
+        localStorage.setItem("lang", lang);
+        document.querySelectorAll("[data-key]").forEach(el => {
+            const key = el.getAttribute("data-key");
+            el.textContent = translations[lang][key];
+        });
+        languageSelect.value = lang;
+    }
+
+    function toggleDarkMode() {
+        const isDark = document.body.classList.toggle("dark");
+        localStorage.setItem("darkMode", isDark ? "on" : "off");
+        toggleDark.textContent = isDark ? "☀️" : "🌙";
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const savedLang = localStorage.getItem("lang") || "en";
+        const dark = localStorage.getItem("darkMode") === "on";
+
+        setLanguage(savedLang);
+        if (dark) {
+            document.body.classList.add("dark");
+            toggleDark.textContent = "☀️";
+        }
+
+        languageSelect.addEventListener("change", (e) => setLanguage(e.target.value));
+        toggleDark.addEventListener("click", toggleDarkMode);
+    });
+</script>
+</body>
+</html>
