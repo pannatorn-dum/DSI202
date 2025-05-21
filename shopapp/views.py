@@ -7,7 +7,8 @@ from .models import Product
 
 def homepage(request):
     if request.user.is_authenticated:
-        messages.success(request, "ยินดีต้อนรับกลับค่ะ!")
+        messages.success(request, "ยินดีต้อนรับ")
+        
     query = request.GET.get('q')
     if query:
         products = Product.objects.filter(name__icontains=query)
@@ -19,9 +20,10 @@ def homepage(request):
     return render(request, 'homepage.html', {'products': products})
 
 
-def product_detail(request, product_id):
-    product = get_object_or_404(Product, id=product_id)
-    return render(request, 'shopapp/product_detail.html', {'product': product})
+
+def product_detail(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    return render(request, 'product_detail.html', {'product': product})
 
 def product_list(request):
     products = Product.objects.all()

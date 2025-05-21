@@ -2,201 +2,258 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>{{ product.name }} - Details</title>
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <meta charset="UTF-8" />
+    <title>{{ product.name }} - Treevaq</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" />
     <style>
+        /* --- CSS แถบเมนูแบบเดียวกับ homepage --- */
         body {
-            font-family: Arial, sans-serif;
-            background-color: #eef8e9;
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f9f1;
             margin: 0;
             padding: 0;
+            transition: background-color 0.3s, color 0.3s;
         }
-        .container {
-            display: flex;
-            padding: 40px;
-            gap: 50px;
+        body.dark {
+            background-color: #121212;
+            color: #f0f0f0;
         }
-        .left-panel {
-            flex: 1;
-        }
-        .left-panel .main-image {
-            width: 100%;
-            height: 400px;
-            background-color: #cde2c1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #2e7d32;
-            font-size: 24px;
-            border-radius: 10px;
-        }
-        .thumbnails {
-            display: flex;
-            margin-top: 10px;
-            gap: 10px;
-        }
-        .thumbnails div {
-            width: 60px;
-            height: 60px;
-            background-color: #d6eac7;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 5px;
-        }
-        .right-panel {
-            flex: 1;
-            background-color: #e9f4dc;
-            padding: 30px;
-            border-radius: 10px;
-        }
-        .product-title {
-            font-size: 24px;
-            font-weight: bold;
-            color: #2e7d32;
-        }
-        .price {
-            font-size: 22px;
-            color: #b74c00;
-            margin-top: 10px;
-        }
-        .old-price {
-            text-decoration: line-through;
-            color: gray;
-            margin-left: 10px;
-        }
-        .discount {
-            color: #d84315;
-            margin-left: 10px;
-        }
-        .rating {
-            margin-top: 10px;
-            color: #ffb300;
-        }
-        .sold {
-            font-weight: bold;
-            margin: 10px 0;
-        }
-        .color-select {
-            margin: 10px 0;
-        }
-        .error-msg {
-            color: red;
-        }
-        .quantity {
-            margin-top: 10px;
-        }
-        .quantity button {
-            background-color: #a5d6a7;
-            border: none;
-            padding: 6px 10px;
-            margin: 0 5px;
-            font-weight: bold;
-        }
-        .actions {
-            margin-top: 20px;
-            display: flex;
-            gap: 10px;
-        }
-        .add-to-cart {
-            background-color: #66bb6a;
-            border: 2px solid #2e7d32;
-            padding: 10px 20px;
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-        .buy-now {
-            background-color: #ffb74d;
-            border: none;
-            padding: 10px 20px;
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-        .nav-btn {
-            position: fixed;
-            bottom: 40px;
+        .navbar {
             background-color: #2e7d32;
             color: white;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
+            padding: 15px 30px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        .navbar form {
+            flex: 1;
+            min-width: 200px;
+        }
+        .navbar input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 6px 10px;
+            border-radius: 8px;
+            transition: background-color 0.3s;
+        }
+        .navbar a:hover {
+            background-color: #1b5e20;
+        }
+        .language-select, .toggle-dark {
+            margin-left: 10px;
+            padding: 6px 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .language-toggle {
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-size: 24px;
         }
-        .left-btn {
-            left: 20px;
+        .menu-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            width: 100%;
+            margin-top: 10px;
         }
-        .right-btn {
-            right: 20px;
+
+        /* --- CSS ส่วนรายละเอียดสินค้า --- */
+        .product-container {
+            max-width: 900px;
+            margin: 40px auto;
+            background-color: #e8f5e9;
+            border-radius: 16px;
+            padding: 30px;
+            display: flex;
+            gap: 40px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            color: #2e7d32;
+        }
+        body.dark .product-container {
+            background-color: #333;
+            color: #eee;
+        }
+        .product-image {
+            flex: 1;
+        }
+        .product-image img {
+            width: 100%;
+            border-radius: 16px;
+            object-fit: contain;
+            max-height: 400px;
+        }
+        .product-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .product-info h1 {
+            margin: 0 0 15px;
+            font-size: 2.2rem;
+        }
+        .product-info .price {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #388e3c;
+        }
+        .product-info .description {
+            flex-grow: 1;
+            font-size: 1.1rem;
+            line-height: 1.5;
+            margin-bottom: 30px;
+        }
+        .btn-buy {
+            background-color: #2e7d32;
+            color: white;
+            padding: 15px 25px;
+            font-weight: 600;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            align-self: start;
+        }
+        .btn-buy:hover {
+            background-color: #1b5e20;
+        }
+
+        /* Dark mode */
+        .dark .btn-buy {
+            background-color: #81c784;
+            color: #121212;
+        }
+        .dark .btn-buy:hover {
+            background-color: #519657;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .product-container {
+                flex-direction: column;
+                padding: 20px;
+            }
+            .product-image img {
+                max-height: 300px;
+            }
         }
     </style>
 </head>
 <body>
-    
-{% if messages %}
-    {% for message in messages %}
-        <div class="alert alert-success">
-            {{ message }}
-        </div>
-    {% endfor %}
-{% endif %}
-
-<div class="container">
-    <div class="left-panel">
-        <div class="main-image">Image</div>
-        <div class="thumbnails">
-            <div>Img1</div>
-            <div>Img2</div>
-            <div>Img3</div>
-            <div>Img4</div>
-        </div>
-    </div>
-    <div class="right-panel">
-        <div class="product-title">{{ product.name }}</div>
-        <div>{{ product.description }}</div>
-
-        <div class="price">
-            ${{ product.discounted_price }}
-            <span class="old-price">${{ product.original_price }}</span>
-            <span class="discount">(-{{ product.discount_percent }}%)</span>
+    <!-- แถบเมนูเหมือน homepage -->
+    <div class="navbar">
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <a href="{% url 'homepage' %}" style="color:white; text-decoration: none; font-weight: bold;">🌱 Treevaq</a>
         </div>
 
-        <div class="rating">⭐ {{ product.rating }} | {{ product.rating_count }} ratings</div>
-        <div class="sold">Sold: {{ product.sold }} pieces</div>
+        <div style="flex: 1; display: flex; align-items: center; gap: 15px; flex-wrap: wrap; justify-content: center;">
+            <a href="#" data-key="all">All</a>
+            <a href="#" data-key="best">Best Sellers</a>
+            <a href="#" data-key="promo">Eco Promotions</a>
+            <a href="#" data-key="sell">Sell</a>
 
-        <div class="color-select">
-            <select>
-                <option>Select Color</option>
-                {% for color in product.available_colors %}
-                    <option>{{ color }}</option>
-                {% endfor %}
+            <form method="get" action="{% url 'homepage' %}" style="margin: 0;">
+                <input type="text" id="searchInput" name="q" placeholder="Search..." value="{{ request.GET.q }}"
+                       style="width: 250px; padding: 8px; border-radius: 8px; border: none;">
+            </form>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <select id="languageSelect" class="language-select">
+                <option value="en">EN</option>
+                <option value="th">TH</option>
             </select>
-            <span class="error-msg">กรุณาเลือกตัวเลือกสินค้าก่อน</span>
-        </div>
-
-        <div class="quantity">
-            <button>-</button>
-            <input type="number" value="1" style="width: 40px;">
-            <button>+</button>
-            <span>({{ product.stock }} in stock)</span>
-        </div>
-
-        <div class="actions">
-            <button class="add-to-cart">Add to Cart</button>
-            <button class="buy-now">Buy Now</button>
+            <button id="toggleDark" class="toggle-dark">🌙</button>
+            <a href="{% url 'login' %}" style="color: white; font-size: 20px;">👤</a>
+            <a href="{% url 'homepage' %}" style="color: white; font-size: 20px;">🛒</a>
         </div>
     </div>
-</div>
 
-<div class="nav-btn left-btn">←</div>
-<div class="nav-btn right-btn">→</div>
+    <!-- เนื้อหาสินค้า -->
+    <div class="product-container">
+        <div class="product-image">
+            {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}">
+            {% else %}
+                <img src="{% static 'default_product.png' %}" alt="No Image Available">
+            {% endif %}
+        </div>
+        <div class="product-info">
+            <h1>{{ product.name }}</h1>
+            <div class="price">{{ product.price|default:"฿0" }}</div>
+            <div class="description">{{ product.description|linebreaks }}</div>
+            <button class="btn-buy">ซื้อสินค้า</button>
+        </div>
+    </div>
 
+    <!-- JavaScript สำหรับเปลี่ยนภาษา และโหมดมืด -->
+    <script>
+        const translations = {
+            en: {
+                all: "All",
+                best: "Best Sellers",
+                promo: "Eco Promotions",
+                sell: "Sell",
+                placeholder: "Search for eco-friendly products..."
+            },
+            th: {
+                all: "ทั้งหมด",
+                best: "สินค้าขายดี",
+                promo: "โปรโมชั่นรักษ์โลก",
+                sell: "ขาย",
+                placeholder: "ค้นหาสินค้ารักษ์โลก..."
+            }
+        };
+
+        const languageSelect = document.getElementById("languageSelect");
+        const toggleDark = document.getElementById("toggleDark");
+
+        function setLanguage(lang) {
+            localStorage.setItem("lang", lang);
+            document.querySelectorAll("[data-key]").forEach(el => {
+                const key = el.getAttribute("data-key");
+                if(translations[lang][key]) {
+                    el.textContent = translations[lang][key];
+                }
+            });
+            document.getElementById("searchInput").placeholder = translations[lang].placeholder;
+            languageSelect.value = lang;
+        }
+
+        function toggleDarkMode() {
+            const isDark = document.body.classList.toggle("dark");
+            localStorage.setItem("darkMode", isDark ? "on" : "off");
+            toggleDark.textContent = isDark ? "☀️" : "🌙";
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const savedLang = localStorage.getItem("lang") || "en";
+            const dark = localStorage.getItem("darkMode") === "on";
+
+            setLanguage(savedLang);
+            if (dark) {
+                document.body.classList.add("dark");
+                toggleDark.textContent = "☀️";
+            }
+
+            languageSelect.addEventListener("change", (e) => {
+                setLanguage(e.target.value);
+            });
+
+            toggleDark.addEventListener("click", toggleDarkMode);
+        });
+    </script>
 </body>
 </html>

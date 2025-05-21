@@ -124,18 +124,50 @@
         <a href="{% url 'homepage' %}" style="color:white; text-decoration: none; font-weight: bold;">🌱 Treevaq</a>
     </div>
 
-    <!-- ตรงกลาง: เมนู + ช่องค้นหา -->
-    <div style="flex: 1; display: flex; align-items: center; gap: 15px; flex-wrap: wrap; justify-content: center;">
-        <a href="#" data-key="all">All</a>
-        <a href="#" data-key="best">Best Sellers</a>
-        <a href="#" data-key="promo">Eco Promotions</a>
-        <a href="#" data-key="sell">Sell</a>
+<!-- ตรงกลาง: เมนู + ช่องค้นหา -->
+<div style="flex: 1; display: flex; align-items: center; gap: 15px; flex-wrap: wrap; justify-content: center;">
+    <a href="#" data-key="all">All</a>
+    <a href="#" data-key="best">Best Sellers</a>
+    <a href="#" data-key="promo">Eco Promotions</a>
+    <a href="#" data-key="sell">Sell</a>
 
-        <form method="get" action="{% url 'homepage' %}" style="margin: 0;">
-            <input type="text" id="searchInput" name="q" placeholder="Search..." value="{{ request.GET.q }}"
-                   style="width: 250px; padding: 8px; border-radius: 8px; border: none;">
-        </form>
-    </div>
+    <form method="get" action="{% url 'homepage' %}" style="margin: 0; position: relative;">
+        <input type="text" id="searchInput" name="q" placeholder="Search..." value="{{ request.GET.q }}"
+               style="width: 250px; padding: 8px; border-radius: 8px; border: none;">
+        <!-- Dropdown แสดงผลค้นหา -->
+        <ul id="searchResults" style="display:none; position: absolute; top: 40px; left: 0; width: 100%; max-height: 200px; overflow-y: auto; background: white; border: 1px solid #ccc; border-radius: 8px; padding: 0; margin: 0; list-style: none; z-index: 1000;">
+            {% if products %}
+                {% for product in products %}
+                <li style="padding: 8px; border-bottom: 1px solid #eee;">
+                    <a href="{% url 'product_detail' product.id %}" style="text-decoration: none; color: black;">
+                        {{ product.name }}
+                    </a>
+                </li>
+                {% endfor %}
+            {% endif %}
+        </ul>
+    </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.getElementById('searchInput');
+    const dropdown = document.getElementById('searchResults');
+
+    function toggleDropdown() {
+        if (searchInput.value.trim() === '') {
+            dropdown.style.display = 'none';
+        } else {
+            dropdown.style.display = 'block';
+        }
+    }
+
+    toggleDropdown();
+
+    searchInput.addEventListener('input', toggleDropdown);
+});
+</script>
+
 
     <!-- ด้านขวา: Language / Theme / Account / Cart -->
     <div style="display: flex; align-items: center; gap: 10px;">
@@ -152,27 +184,41 @@
     <div class="banner" id="bannerText">
         🌿 Special Discount on Eco-friendly Products! 🌍
     </div>
+<h2 data-key="promo" style="text-align: center; margin-top: 30px;">Special Discounted Products</h2>
 
-    <div class="categories">
-        <div class="category" data-key="cat1">Sustainable Options</div>
-        <div class="category" data-key="cat2">Organic Groceries</div>
-        <div class="category" data-key="cat3">Zero Waste Products</div>
+<div class="discount-carousel-container">
+    <button class="carousel-btn left" onclick="scrollCarousel(-1)">❮</button>
+    <div class="discount-carousel" id="discountCarousel">
+        {% for product in discounted_products %}
+        <a href="{% url 'product_detail' product.id %}" class="discount-card">
+            {% if product.image %}
+            <img src="{{ product.image.url }}" alt="{{ product.name }}">
+            {% endif %}
+            <div class="ribbon">SALE</div>
+            <div>{{ product.name }}</div>
+        </a>
+        {% endfor %}
     </div>
+    <button class="carousel-btn right" onclick="scrollCarousel(1)">❯</button>
+</div>
 
     <h2 data-key="featured">Featured Eco-Friendly Products</h2>
 
-    <div class="featured">
-        {% for product in Products %}
+<div class="featured">
+    {% if products %}
+        {% for product in products %}
             <a href="{% url 'product_detail' product.id %}" class="product">
                 {% if product.image %}
                     <img src="{{ product.image.url }}" alt="{{ product.name }}">
                 {% endif %}
                 <div>{{ product.name }}</div>
             </a>
-        {% empty %}
-            <p style="text-align: center;">No products available.</p>
         {% endfor %}
-    </div>
+    {% else %}
+        <p style="text-align: center; width: 100%;">ไม่พบสินค้าที่คุณค้นหา</p>
+    {% endif %}
+</div>
+
 
     <script>
         const translations = {
