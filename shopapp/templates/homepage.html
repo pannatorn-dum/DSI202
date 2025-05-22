@@ -5,7 +5,7 @@
 
 {% block extra_css %}
 <style>
-    /* ใส่ CSS ส่วนของ homepage ที่ต้องการเฉพาะที่นี่ (ยกมาจากเดิม) */
+    /* CSS สำหรับ homepage เท่านั้น */
     body {
         background-color: #f1f9f1;
         transition: background-color 0.3s, color 0.3s;
@@ -103,43 +103,6 @@
 </style>
 {% endblock %}
 
-{% block navbar %}
-<!-- ถ้า base2.html มี navbar block ให้ใส่ navbar แบบเดิมที่นี่ (ถ้าไม่มี ก็ลบได้) -->
-<div style="display: flex; align-items: center; gap: 15px;">
-    <a href="{% url 'homepage' %}" style="color:white; text-decoration: none; font-weight: bold;">🌱 Treevaq</a>
-</div>
-<div style="flex: 1; display: flex; align-items: center; gap: 15px; flex-wrap: wrap; justify-content: center;">
-    <a href="#" data-key="all">All</a>
-    <a href="#" data-key="best">Best Sellers</a>
-    <a href="#" data-key="promo">Eco Promotions</a>
-    <a href="#" data-key="sell">Sell</a>
-    <form method="get" action="{% url 'homepage' %}" style="margin: 0; position: relative;">
-        <input type="text" id="searchInput" name="q" placeholder="Search..." value="{{ request.GET.q }}"
-               style="width: 250px; padding: 8px; border-radius: 8px; border: none;">
-        <ul id="searchResults" style="display:none; position: absolute; top: 40px; left: 0; width: 100%; max-height: 200px; overflow-y: auto; background: white; border: 1px solid #ccc; border-radius: 8px; padding: 0; margin: 0; list-style: none; z-index: 1000;">
-            {% if products %}
-                {% for product in products %}
-                <li style="padding: 8px; border-bottom: 1px solid #eee;">
-                    <a href="{% url 'product_detail' product.id %}" style="text-decoration: none; color: black;">
-                        {{ product.name }}
-                    </a>
-                </li>
-                {% endfor %}
-            {% endif %}
-        </ul>
-    </form>
-</div>
-<div style="display: flex; align-items: center; gap: 10px;">
-    <select id="languageSelect" class="language-select">
-        <option value="en">EN</option>
-        <option value="th">TH</option>
-    </select>
-    <button id="toggleDark" class="toggle-dark">🌙</button>
-    <a href="{% url 'login' %}" style="color: white; font-size: 20px;">👤</a>
-    <a href="{% url 'homepage' %}" style="color: white; font-size: 20px;">🛒</a>
-</div>
-{% endblock %}
-
 {% block content %}
 <div class="banner" id="bannerText">
     🌿 Special Discount on Eco-friendly Products! 🌍
@@ -198,14 +161,18 @@
         const dropdown = document.getElementById('searchResults');
 
         function toggleDropdown() {
-            if (searchInput.value.trim() === '') {
-                dropdown.style.display = 'none';
-            } else {
-                dropdown.style.display = 'block';
+            if (searchInput && dropdown) {
+                if (searchInput.value.trim() === '') {
+                    dropdown.style.display = 'none';
+                } else {
+                    dropdown.style.display = 'block';
+                }
             }
         }
         toggleDropdown();
-        searchInput.addEventListener('input', toggleDropdown);
+        if (searchInput) {
+            searchInput.addEventListener('input', toggleDropdown);
+        }
     });
 
     const translations = {
@@ -224,21 +191,17 @@
     };
 
     const languageSelect = document.getElementById('languageSelect');
-    languageSelect.addEventListener('change', (e) => {
-        const lang = e.target.value;
-        document.querySelectorAll('[data-key]').forEach(el => {
-            const key = el.getAttribute('data-key');
-            if (key && translations[lang][el.textContent.trim()]) {
-                el.textContent = translations[lang][el.textContent.trim()] || el.textContent;
-            }
+    if(languageSelect) {
+        languageSelect.addEventListener('change', (e) => {
+            const lang = e.target.value;
+            document.querySelectorAll('[data-key]').forEach(el => {
+                const key = el.getAttribute('data-key');
+                if (key && translations[lang][el.textContent.trim()]) {
+                    el.textContent = translations[lang][el.textContent.trim()] || el.textContent;
+                }
+            });
         });
-    });
-
-    const toggleDark = document.getElementById('toggleDark');
-    toggleDark.addEventListener('click', () => {
-        document.body.classList.toggle('dark');
-        toggleDark.textContent = document.body.classList.contains('dark') ? '☀️' : '🌙';
-    });
+    }
 
     function scrollCarousel(id, direction) {
         const carousel = document.getElementById(id);

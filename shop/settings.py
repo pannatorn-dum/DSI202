@@ -19,33 +19,29 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # ถ้าใช้ allauth ให้เก็บไว้
-    # 'django.contrib.sites',
-    # 'allauth',
-    # 'allauth.account',
-    # 'allauth.socialaccount',
-
+    # สำหรับ django-allauth
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
     'shopapp',  # แอปของคุณ
 ]
+
+# ตั้งค่า SITE_ID สำหรับ allauth
+SITE_ID = 1
 
 # -------------------------
 # Email Backend (ส่งทาง console สำหรับ dev)
 # -------------------------
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-# ถ้าจะใช้จริงให้ใช้ SMTP เช่น:
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST = 'smtp.gmail.com'
-# EMAIL_PORT = 587
-# EMAIL_USE_TLS = True
-# EMAIL_HOST_USER = 'you@example.com'
-# EMAIL_HOST_PASSWORD = 'your-password'
-
 # -------------------------
-# Authentication Backends (ใช้ default)
+# Authentication Backends
 # -------------------------
 AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',
+    'django.contrib.auth.backends.ModelBackend',  # ให้ default backend ทำงาน
+    'allauth.account.auth_backends.AuthenticationBackend',  # allauth backend
 ]
 
 # -------------------------
@@ -53,7 +49,7 @@ AUTHENTICATION_BACKENDS = [
 # -------------------------
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
-LOGIN_URL = '/login/'
+LOGIN_URL = '/accounts/login/'
 
 # -------------------------
 # Middleware
@@ -64,6 +60,10 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    
+    # เพิ่มบรรทัดนี้
+    'allauth.account.middleware.AccountMiddleware',
+    
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -78,7 +78,7 @@ TEMPLATES = [
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
-                'django.template.context_processors.request',
+                'django.template.context_processors.request',  # จำเป็นต้องมี allauth ใช้
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
@@ -136,3 +136,12 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # Default primary key
 # -------------------------
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# --- allauth settings (ถ้าต้องการปรับแต่งเพิ่มเติม สามารถเพิ่มได้) ---
+ACCOUNT_LOGIN_METHODS = {'email', 'username'}  # ล็อกอินด้วย username หรือ email
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'username*', 'password1*', 'password2*']  # กำหนดฟิลด์ที่ต้องใช้ตอนสมัคร
+ACCOUNT_LOGOUT_REDIRECT_URL = '/'
+ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_AUTHENTICATION_METHOD = "email"
+

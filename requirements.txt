@@ -1,2 +1,9 @@
 Django
+promptpay
+qrcode
+django-allauth
+requests
+PyJWT
+cryptography
 Pillow
+

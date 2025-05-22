@@ -3,7 +3,11 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm, PasswordResetForm
 from django.contrib.auth.models import User
 from django.contrib import messages
-from .models import Product
+from .models import Product 
+import promptpay
+from promptpay import qrcode as pp
+import qrcode, io, base64
+from io import BytesIO
 
 from django.contrib import messages
 from .models import Product
@@ -68,8 +72,47 @@ def add_to_cart(request, pk):
     return redirect('product_detail', pk=pk)
 
 
+# ฟังก์ชันสร้าง QR Code พร้อมแปลงเป็น base64 string
+def generate_promptpay_qr(amount, ref=None):
+    phone_number = '0918259104'  # ใส่เบอร์พร้อมเพย์ของร้าน
+
+    # ไลบรารีนี้รับเฉพาะเบอร์และ amount เท่านั้น (ไม่รองรับ ref/invoice)
+    payload = pp.generate_payload(phone_number, amount)
+
+    qr = qrcode.make(payload)
+    buffered = BytesIO()
+    qr.save(buffered, format="PNG")
+    qr_code_base64 = base64.b64encode(buffered.getvalue()).decode("utf-8")
+    return qr_code_base64
 def payment(request):
-    return render(request, 'payment.html')
+    cart = request.session.get('cart', {})
+
+    cart_items = []
+    total_price = 0
+    for product_id, quantity in cart.items():
+        product = get_object_or_404(Product, pk=product_id)
+        subtotal = product.original_price * quantity
+        cart_items.append({
+            'product': product,
+            'quantity': quantity,
+            'subtotal': subtotal,
+        })
+        total_price += subtotal
+
+    # สมมุติสร้าง payment_ref จากเวลา/เลขสุ่ม (คุณอาจใช้ UUID หรือ model จริงในโปรเจกต์จริง)
+    import random
+    payment_ref = f"REF{random.randint(10000,99999)}"
+
+    qr_code_base64 = generate_promptpay_qr(total_price, payment_ref)
+
+    return render(request, 'payment.html', {
+        'cart_items': cart_items,
+        'total_price': total_price,
+        'qr_code_base64': qr_code_base64,
+        'promptpay_number': "0918259104",
+        'payment_ref': payment_ref,
+    })
+
 
 def product_list(request):
     products = Product.objects.all()
@@ -88,11 +131,16 @@ def login_view(request):
     return render(request, 'account/login.html')
 
 def signup_view(request):
-    form = UserCreationForm(request.POST or None)
-    if request.method == 'POST' and form.is_valid():
-        user = form.save()
-        login(request, user)
-        return redirect('homepage')
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "สมัครสมาชิกสำเร็จ กรุณาเข้าสู่ระบบ")
+            return redirect('login')  # 'login' คือชื่อ url pattern ของหน้า login ของคุณ
+        else:
+            messages.error(request, "สมัครสมาชิกไม่สำเร็จ กรุณาลองใหม่")
+    else:
+        form = UserCreationForm()
     return render(request, 'account/signup.html', {'form': form})
 
 def forgot_password_view(request):

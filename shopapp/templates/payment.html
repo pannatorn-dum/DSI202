@@ -152,7 +152,12 @@
 
   <div class="total-price" id="totalPriceDisplay"></div>
 
-  <div id="qrCode"></div>
+ <div id="qrCode" style="text-align: center; margin-top: 30px;">
+   <p>เบอร์พร้อมเพย์: {{ promptpay_number }}</p>
+   <p>หมายเลขอ้างอิง: {{ payment_ref }}</p>
+   <img src="data:image/png;base64,{{ qr_code_base64 }}" alt="QR พร้อมเพย์" style="max-width: 250px;" />
+ </div>
+
 
   <form id="submitForm">
     <button type="submit" form="paymentForm">ยืนยันการสั่งซื้อ</button>
@@ -197,15 +202,7 @@
 
     totalPriceDisplay.textContent = `ยอดรวมทั้งหมด: ฿${totalPrice.toFixed(2)}`;
 
-    // สร้าง QR code
-    const paymentText = encodeURIComponent(`ชำระเงิน Treevaq จำนวน ฿${totalPrice.toFixed(2)}`);
-    const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${paymentText}&size=250x250`;
 
-    const qrImg = document.createElement("img");
-    qrImg.src = qrApiUrl;
-    qrImg.alt = "QR code สำหรับชำระเงิน";
-    qrImg.style.maxWidth = "250px";
-    qrCodeDiv.appendChild(qrImg);
 
     submitForm.addEventListener("submit", (e) => {
       e.preventDefault();
