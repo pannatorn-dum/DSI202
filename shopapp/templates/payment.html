@@ -1,0 +1,234 @@
+{% extends "base2.html" %}
+
+{% block content %}
+<style>
+  .container {
+    max-width: 960px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #e8f5e9;
+    border-radius: 16px;
+    font-family: 'Inter', sans-serif;
+    color: #2e7d32;
+  }
+  body.dark .container {
+    background-color: #333;
+    color: #a5d6a7;
+  }
+  h1 {
+    text-align: center;
+    font-weight: 700;
+    font-size: 2rem;
+    margin-bottom: 30px;
+  }
+  form label {
+    font-weight: 600;
+    display: block;
+    margin: 15px 0 5px;
+  }
+  form input, form textarea {
+    width: 100%;
+    padding: 10px;
+    font-size: 1rem;
+    border-radius: 8px;
+    border: 1px solid #4caf50;
+  }
+  body.dark form input, body.dark form textarea {
+    background-color: #555;
+    border: 1px solid #81c784;
+    color: #a5d6a7;
+  }
+  form button {
+    margin-top: 25px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    padding: 15px 40px;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 1.1rem;
+    display: block;
+    width: 100%;
+  }
+  form button:hover {
+    background-color: #357a38;
+  }
+  body.dark form button:hover {
+    background-color: #519657;
+  }
+
+  /* การ์ดสินค้า */
+  .products-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-top: 25px;
+    justify-content: center;
+  }
+  .product-card {
+    background-color: #a5d6a7;
+    border-radius: 12px;
+    width: 280px;
+    padding: 15px;
+    box-shadow: 0 2px 8px rgb(0 0 0 / 0.15);
+    color: #1b5e20;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.2s ease;
+  }
+  .product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 16px rgb(0 0 0 / 0.25);
+  }
+  body.dark .product-card {
+    background-color: #4caf5080;
+    color: #a5d6a7;
+  }
+  .product-image {
+    width: 180px;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 6px rgb(0 0 0 / 0.2);
+  }
+  .product-name {
+    font-weight: 700;
+    font-size: 1.15rem;
+    margin-bottom: 8px;
+    text-align: center;
+    min-height: 50px;
+  }
+  .product-price {
+    font-size: 1.1rem;
+    color: #2e7d32;
+    margin-bottom: 6px;
+  }
+  .product-quantity {
+    font-size: 1rem;
+    margin-bottom: 6px;
+  }
+  .product-total {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #1b5e20;
+  }
+
+  /* ยอดรวม */
+  .total-price {
+    text-align: right;
+    font-size: 1.7rem;
+    font-weight: 700;
+    margin-top: 35px;
+  }
+
+  /* QR Code */
+  #qrCode {
+    margin: 30px auto 0;
+    max-width: 250px;
+    text-align: center;
+  }
+</style>
+
+<div class="container">
+  <h1>ชำระเงิน (Payment)</h1>
+
+  <form id="paymentForm">
+    <label for="name">ชื่อ-นามสกุล</label>
+    <input type="text" id="name" name="name" required placeholder="กรอกชื่อ-นามสกุล">
+
+    <label for="phone">เบอร์โทรศัพท์</label>
+    <input type="tel" id="phone" name="phone" required placeholder="เช่น 08xxxxxxxx">
+
+    <label for="address">ที่อยู่จัดส่ง</label>
+    <textarea id="address" name="address" rows="4" required placeholder="กรอกที่อยู่จัดส่ง"></textarea>
+  </form>
+
+  <div class="products-container" id="productsContainer">
+    <!-- สินค้าจะถูกเพิ่มที่นี่ -->
+  </div>
+
+  <div class="total-price" id="totalPriceDisplay"></div>
+
+  <div id="qrCode"></div>
+
+  <form id="submitForm">
+    <button type="submit" form="paymentForm">ยืนยันการสั่งซื้อ</button>
+  </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const cart = JSON.parse(localStorage.getItem("cart")) || {};
+    const productsContainer = document.getElementById("productsContainer");
+    const totalPriceDisplay = document.getElementById("totalPriceDisplay");
+    const qrCodeDiv = document.getElementById("qrCode");
+    const paymentForm = document.getElementById("paymentForm");
+    const submitForm = document.getElementById("submitForm");
+
+    let totalPrice = 0;
+
+    if(Object.keys(cart).length === 0){
+      productsContainer.innerHTML = '<p style="text-align:center; width: 100%; font-size: 1.3rem; color: #555; margin-top: 30px;">ไม่มีสินค้าในตะกร้า</p>';
+    } else {
+      Object.values(cart).forEach(item => {
+        const totalItemPrice = item.price * item.quantity;
+        totalPrice += totalItemPrice;
+
+        const imageSrc = item.image || "https://via.placeholder.com/180?text=No+Image";
+
+        const card = document.createElement("div");
+        card.className = "product-card";
+        card.innerHTML = `
+          <img src="${imageSrc}" alt="${item.name}" class="product-image">
+          <div class="product-name">${item.name}</div>
+          <div class="product-price">ราคา: ฿${item.price.toFixed(2)}</div>
+          <div class="product-quantity">จำนวน: ${item.quantity}</div>
+          <div class="product-total">ราคารวม: ฿${totalItemPrice.toFixed(2)}</div>
+        `;
+
+        productsContainer.appendChild(card);
+      });
+    }
+
+    totalPriceDisplay.textContent = `ยอดรวมทั้งหมด: ฿${totalPrice.toFixed(2)}`;
+
+    // สร้าง QR code
+    const paymentText = encodeURIComponent(`ชำระเงิน Treevaq จำนวน ฿${totalPrice.toFixed(2)}`);
+    const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${paymentText}&size=250x250`;
+
+    const qrImg = document.createElement("img");
+    qrImg.src = qrApiUrl;
+    qrImg.alt = "QR code สำหรับชำระเงิน";
+    qrImg.style.maxWidth = "250px";
+    qrCodeDiv.appendChild(qrImg);
+
+    submitForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      if(totalPrice === 0){
+        alert("ไม่มีสินค้าในตะกร้า ไม่สามารถสั่งซื้อได้");
+        return;
+      }
+
+      const name = paymentForm.name.value.trim();
+      const phone = paymentForm.phone.value.trim();
+      const address = paymentForm.address.value.trim();
+
+      if(!name || !phone || !address){
+        alert("กรุณากรอกข้อมูลให้ครบถ้วน");
+        return;
+      }
+
+      alert(`สั่งซื้อสำเร็จ!\nชื่อ: ${name}\nเบอร์โทร: ${phone}\nที่อยู่: ${address}\nยอดชำระ: ฿${totalPrice.toFixed(2)}\n\n(คุณสามารถต่อยอดส่งข้อมูลนี้ไป backend ได้)`);
+
+      localStorage.removeItem("cart");
+      window.location.href = "/";
+    });
+  });
+</script>
+{% endblock %}

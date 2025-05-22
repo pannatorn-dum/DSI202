@@ -1,0 +1,287 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="{{ request.LANGUAGE_CODE|default:'en' }}">
+<head>
+    <meta charset="UTF-8" />
+    <title>{% block title %}Treevaq - Eco Products{% endblock %}</title>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" />
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f9f1;
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        body.dark {
+            background-color: #121212;
+            color: #f0f0f0;
+        }
+        .navbar {
+            background-color: #2e7d32;
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        .navbar form {
+            flex: 1;
+            min-width: 200px;
+        }
+        .navbar input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 6px 10px;
+            border-radius: 8px;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .navbar a:hover {
+            background-color: #1b5e20;
+        }
+        .dark .navbar,
+        .dark .banner,
+        .dark .category,
+        .dark .product {
+            background-color: #333 !important;
+            color: #fff !important;
+        }
+        .dark .navbar a {
+            color: #fff;
+        }
+        .language-select, .toggle-dark {
+            margin-left: 10px;
+            padding: 6px 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        #cart-count {
+            background: #e53935;
+            border-radius: 50%;
+            padding: 2px 7px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: white;
+            min-width: 20px;
+            text-align: center;
+            line-height: 1;
+            user-select: none;
+        }
+
+        /* Popup notification style */
+        #cart-popup {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #4caf50;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            font-weight: 600;
+            font-size: 1rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 9999;
+            max-width: 320px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        body.dark #cart-popup {
+            background-color: #81c784;
+            color: #121212;
+            box-shadow: 0 4px 12px rgba(255,255,255,0.2);
+        }
+        #cart-popup.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        #cart-popup img {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            object-fit: cover;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+        #cart-popup button {
+            background: transparent;
+            border: none;
+            color: inherit;
+            font-weight: 700;
+            font-size: 1.3rem;
+            cursor: pointer;
+            margin-left: auto;
+            line-height: 1;
+            user-select: none;
+        }
+    </style>
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+    <!-- Navbar -->
+    <div class="navbar">
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <a href="{% url 'homepage' %}" style="color:white; text-decoration: none; font-weight: bold;">🌱 Treevaq</a>
+        </div>
+
+        <div style="flex: 1; display: flex; align-items: center; gap: 15px; flex-wrap: wrap; justify-content: center;">
+            <a href="#" data-key="all">All</a>
+            <a href="#" data-key="best">Best Sellers</a>
+            <a href="#" data-key="promo">Eco Promotions</a>
+            <a href="#" data-key="sell">Sell</a>
+
+            <form method="get" action="{% url 'homepage' %}" style="margin: 0; position: relative;">
+                <input type="text" id="searchInput" name="q" placeholder="Search..." value="{{ request.GET.q }}"
+                       style="width: 250px; padding: 8px; border-radius: 8px; border: none;">
+                <ul id="searchResults" style="display:none; position: absolute; top: 40px; left: 0; width: 100%; max-height: 200px; overflow-y: auto; background: white; border: 1px solid #ccc; border-radius: 8px; padding: 0; margin: 0; list-style: none; z-index: 1000;">
+                    {% if products %}
+                        {% for product in products %}
+                        <li style="padding: 8px; border-bottom: 1px solid #eee;">
+                            <a href="{% url 'product_detail' product.id %}" style="text-decoration: none; color: black;">
+                                {{ product.name }}
+                            </a>
+                        </li>
+                        {% endfor %}
+                    {% endif %}
+                </ul>
+            </form>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <select id="languageSelect" class="language-select">
+                <option value="en" {% if request.LANGUAGE_CODE == 'en' %}selected{% endif %}>EN</option>
+                <option value="th" {% if request.LANGUAGE_CODE == 'th' %}selected{% endif %}>TH</option>
+            </select>
+            <button id="toggleDark" class="toggle-dark">🌙</button>
+            <a href="{% url 'login' %}" style="color: white; font-size: 20px;">👤</a>
+            <a href="{% url 'cart' %}" style="color: white; font-size: 20px;">
+              🛒 <span id="cart-count">0</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Popup notification for Add to Cart -->
+    <div id="cart-popup" role="alert" aria-live="assertive" aria-atomic="true" style="display:none;">
+        <img src="" alt="Product Image" id="popup-product-img">
+        <div id="popup-message"></div>
+        <button id="popup-close" aria-label="Close">&times;</button>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Update cart count in navbar
+        function updateCartCount() {
+            const cart = JSON.parse(localStorage.getItem("cart")) || {};
+            let totalQuantity = 0;
+            for (const key in cart) {
+                totalQuantity += cart[key].quantity;
+            }
+            document.getElementById("cart-count").textContent = totalQuantity;
+        }
+
+        updateCartCount();
+
+        // Popup control
+        const cartPopup = document.getElementById('cart-popup');
+        const popupMsg = document.getElementById('popup-message');
+        const popupImg = document.getElementById('popup-product-img');
+        const popupCloseBtn = document.getElementById('popup-close');
+        let popupTimeout;
+
+        function showPopup(productName, productImage, quantity) {
+            popupMsg.textContent = `Added ${quantity} x "${productName}" to cart!`;
+            popupImg.src = productImage;
+            cartPopup.style.display = 'flex';
+            setTimeout(() => {
+                cartPopup.classList.add('show');
+            }, 50);
+
+            // Auto close popup after 3 seconds
+            clearTimeout(popupTimeout);
+            popupTimeout = setTimeout(hidePopup, 3000);
+        }
+
+        function hidePopup() {
+            cartPopup.classList.remove('show');
+            setTimeout(() => {
+                cartPopup.style.display = 'none';
+            }, 300);
+        }
+
+        popupCloseBtn.addEventListener('click', hidePopup);
+
+        // Expose function globally to allow add to cart buttons to call it
+        window.addToCart = function(product) {
+            let cart = JSON.parse(localStorage.getItem("cart")) || {};
+            const productId = product.id;
+            if(cart[productId]) {
+                cart[productId].quantity += 1;
+            } else {
+                cart[productId] = {
+                    id: productId,
+                    name: product.name,
+                    price: product.price,
+                    image: product.image,
+                    quantity: 1
+                };
+            }
+            localStorage.setItem("cart", JSON.stringify(cart));
+            updateCartCount();
+            showPopup(product.name, product.image, cart[productId].quantity);
+        };
+
+        // Language select change handler
+        const langSelect = document.getElementById('languageSelect');
+        langSelect.addEventListener('change', () => {
+            const lang = langSelect.value;
+            const url = new URL(window.location.href);
+            url.searchParams.set('lang', lang);
+            window.location.href = url.toString();
+        });
+
+        // Dark mode toggle
+        const toggleDarkBtn = document.getElementById('toggleDark');
+        const body = document.body;
+
+        if(localStorage.getItem('darkMode') === 'enabled') {
+            body.classList.add('dark');
+            toggleDarkBtn.textContent = '☀️';
+        }
+
+        toggleDarkBtn.addEventListener('click', () => {
+            body.classList.toggle('dark');
+            if(body.classList.contains('dark')) {
+                localStorage.setItem('darkMode', 'enabled');
+                toggleDarkBtn.textContent = '☀️';
+            } else {
+                localStorage.setItem('darkMode', 'disabled');
+                toggleDarkBtn.textContent = '🌙';
+            }
+        });
+
+    });
+    </script>
+
+    {% block content %}{% endblock %}
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

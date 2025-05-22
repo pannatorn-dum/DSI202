@@ -1,0 +1,279 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Shopping Cart - Treevaq</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" />
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f0f8f5;
+      color: #2e7d32;
+      margin: 0; padding: 0;
+    }
+    body.dark {
+      background-color: #222;
+      color: #a5d6a7;
+    }
+    .container {
+      max-width: 960px;
+      margin: 40px auto;
+      padding: 20px;
+      background-color: #e8f5e9;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    body.dark .container {
+      background-color: #333;
+      box-shadow: 0 4px 12px rgba(255,255,255,0.1);
+    }
+    h1 {
+      font-weight: 700;
+      font-size: 2rem;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+    .cart-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .cart-item {
+      display: flex;
+      align-items: center;
+      background-color: #dcedc8;
+      border-radius: 12px;
+      padding: 15px 20px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      transition: background-color 0.3s;
+    }
+    body.dark .cart-item {
+      background-color: #4a6a3a;
+      box-shadow: 0 2px 6px rgba(255,255,255,0.1);
+    }
+    .cart-item img {
+      width: 100px;
+      height: 100px;
+      object-fit: contain;
+      border-radius: 12px;
+      margin-right: 20px;
+      flex-shrink: 0;
+      background: white;
+    }
+    .cart-item-info {
+      flex: 1;
+    }
+    .cart-item-info h3 {
+      margin: 0 0 8px 0;
+      font-size: 1.25rem;
+    }
+    .cart-item-info .price, 
+    .cart-item-info .quantity {
+      font-weight: 600;
+      font-size: 1rem;
+      margin-bottom: 6px;
+    }
+    .cart-item-qty-control {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .cart-item-qty-control button {
+      background-color: #4caf50;
+      border: none;
+      color: white;
+      font-weight: 700;
+      font-size: 1.2rem;
+      width: 30px;
+      height: 30px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .cart-item-qty-control button:hover {
+      background-color: #357a38;
+    }
+    body.dark .cart-item-qty-control button {
+      background-color: #81c784;
+      color: #121212;
+    }
+    body.dark .cart-item-qty-control button:hover {
+      background-color: #519657;
+    }
+    .cart-summary {
+      margin-top: 30px;
+      font-size: 1.2rem;
+      font-weight: 700;
+      text-align: right;
+      color: #2e7d32;
+    }
+    body.dark .cart-summary {
+      color: #a5d6a7;
+    }
+    .empty-cart {
+      text-align: center;
+      font-size: 1.2rem;
+      font-weight: 600;
+      padding: 40px 0;
+      color: #666;
+    }
+    body.dark .empty-cart {
+      color: #bbb;
+    }
+    a.btn-checkout {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 15px 40px;
+      background-color: #4caf50;
+      color: white;
+      font-weight: 700;
+      font-size: 1.1rem;
+      border-radius: 12px;
+      text-decoration: none;
+      transition: background-color 0.3s;
+    }
+    a.btn-checkout:hover {
+      background-color: #357a38;
+    }
+    body.dark a.btn-checkout {
+      background-color: #81c784;
+      color: #121212;
+    }
+    body.dark a.btn-checkout:hover {
+      background-color: #519657;
+    }
+  </style>
+</head>
+<body>
+  {% include 'base2.html' %}  <!-- navbar -->
+
+  <div class="container">
+    <h1>Cart 🛒</h1>
+
+    <ul id="cartList" class="cart-list"></ul>
+
+    <div id="cartSummary" class="cart-summary"></div>
+
+    <div id="emptyCartMsg" class="empty-cart" style="display:none;">
+      ไม่มีสินค้าในตะกร้า
+    </div>
+
+    <a href="#" id="checkoutBtn" class="btn-checkout" style="display:none;">Buy now</a>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const cartList = document.getElementById("cartList");
+      const cartSummary = document.getElementById("cartSummary");
+      const emptyCartMsg = document.getElementById("emptyCartMsg");
+      const checkoutBtn = document.getElementById("checkoutBtn");
+
+      let cart = JSON.parse(localStorage.getItem("cart")) || {};
+
+      function renderCart() {
+        const items = Object.values(cart);
+        if (items.length === 0) {
+          cartList.style.display = "none";
+          cartSummary.style.display = "none";
+          checkoutBtn.style.display = "none";
+          emptyCartMsg.style.display = "block";
+          updateNavbarCartCount(0);
+          return;
+        }
+
+        emptyCartMsg.style.display = "none";
+        cartList.style.display = "block";
+        cartSummary.style.display = "block";
+        checkoutBtn.style.display = "inline-block";
+
+        cartList.innerHTML = "";
+
+        let total = 0;
+
+        items.forEach(item => {
+          total += item.price * item.quantity;
+
+          const li = document.createElement("li");
+          li.className = "cart-item";
+
+          li.innerHTML = `
+            <img src="${item.image}" alt="${item.name}">
+            <div class="cart-item-info">
+              <h3>${item.name}</h3>
+              <div class="price">ราคา: ฿${item.price.toFixed(2)}</div>
+              <div class="cart-item-qty-control">
+                <button class="qty-minus" data-id="${item.id}">−</button>
+                <span class="quantity">จำนวน: ${item.quantity}</span>
+                <button class="qty-plus" data-id="${item.id}">+</button>
+              </div>
+              <div>ราคารวม: ฿${(item.price * item.quantity).toFixed(2)}</div>
+            </div>
+          `;
+
+          cartList.appendChild(li);
+        });
+
+        cartSummary.textContent = `ราคารวมทั้งหมด: ฿${total.toFixed(2)}`;
+
+        updateNavbarCartCount(totalQuantity());
+        attachQtyListeners();
+      }
+
+      function totalQuantity() {
+        return Object.values(cart).reduce((sum, item) => sum + item.quantity, 0);
+      }
+
+      function updateNavbarCartCount(count) {
+        // สมมติใน navbar มี element id="cartCount" สำหรับแสดงจำนวนสินค้า
+        const cartCountElem = document.getElementById("cartCount");
+        if (cartCountElem) {
+          cartCountElem.textContent = count;
+        }
+      }
+
+      function attachQtyListeners() {
+        const btnMinus = document.querySelectorAll(".qty-minus");
+        const btnPlus = document.querySelectorAll(".qty-plus");
+
+        btnMinus.forEach(btn => {
+          btn.addEventListener("click", () => {
+            const id = btn.getAttribute("data-id");
+            if (cart[id]) {
+              cart[id].quantity = Math.max(1, cart[id].quantity - 1);
+              saveCartAndRender();
+            }
+          });
+        });
+
+        btnPlus.forEach(btn => {
+          btn.addEventListener("click", () => {
+            const id = btn.getAttribute("data-id");
+            if (cart[id]) {
+              cart[id].quantity += 1;
+              saveCartAndRender();
+            }
+          });
+        });
+      }
+
+      function saveCartAndRender() {
+        localStorage.setItem("cart", JSON.stringify(cart));
+        renderCart();
+      }
+
+      // Event สำหรับปุ่ม Buy now
+      checkoutBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        const total = Object.values(cart).reduce((sum, item) => sum + item.price * item.quantity, 0);
+        localStorage.setItem("totalPrice", total.toFixed(2));
+        localStorage.setItem("cartData", JSON.stringify(cart));
+        window.location.href = "/payment"; // เปลี่ยน URL ให้ตรงกับหน้าจริงของคุณ
+      });
+
+      renderCart();
+    });
+  </script>
+</body>
+</html>

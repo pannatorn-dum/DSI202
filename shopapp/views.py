@@ -5,25 +5,71 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from .models import Product
 
+from django.contrib import messages
+from .models import Product
+
 def homepage(request):
     if request.user.is_authenticated:
         messages.success(request, "ยินดีต้อนรับ")
         
     query = request.GET.get('q')
+    
+    # กรอง promotions ตรงนี้
+    promotions = Product.objects.filter(is_promotion=True)[:10]
+    
     if query:
-        products = Product.objects.filter(name__icontains=query)
+        # กรอง products ที่ไม่ใช่ promotion และชื่อมีคำค้นหา
+        products = Product.objects.filter(is_promotion=False, name__icontains=query)
     else:
-        products = Product.objects.all()[:4]
+        # ดึง products ที่ไม่ใช่ promotion จำกัด 10 รายการ
+        products = Product.objects.filter(is_promotion=False)[:10]
 
-    print("Products in homepage:", products)  # เช็คใน terminal/log
+    print("Products in homepage:", products)
+    print("Promotion products:", promotions)
 
-    return render(request, 'homepage.html', {'products': products})
-
+    return render(request, 'homepage.html', {
+        'products': products,
+        'promotions': promotions,
+    })
 
 
 def product_detail(request, pk):
     product = get_object_or_404(Product, pk=pk)
     return render(request, 'product_detail.html', {'product': product})
+
+def cart_view(request):
+    # ดึง cart จาก session หรือสร้างใหม่ถ้าไม่มี
+    cart = request.session.get('cart', {})
+
+    # สร้าง list รายการสินค้าใน cart
+    cart_items = []
+    total_price = 0
+    for product_id, quantity in cart.items():
+        product = get_object_or_404(Product, pk=product_id)
+        subtotal = product.original_price * quantity
+        cart_items.append({
+            'product': product,
+            'quantity': quantity,
+            'subtotal': subtotal,
+        })
+        total_price += subtotal
+
+    return render(request, 'cart.html', {
+        'cart_items': cart_items,
+        'total_price': total_price,
+    })
+
+def add_to_cart(request, pk):
+    # รับ POST หรือ GET แล้วเพิ่มสินค้าใน cart session
+    cart = request.session.get('cart', {})
+    cart[str(pk)] = cart.get(str(pk), 0) + 1
+    request.session['cart'] = cart
+    messages.success(request, 'เพิ่มสินค้าลงตะกร้าแล้ว')
+    return redirect('product_detail', pk=pk)
+
+
+def payment(request):
+    return render(request, 'payment.html')
 
 def product_list(request):
     products = Product.objects.all()

@@ -6,69 +6,7 @@
     <title>{{ product.name }} - Treevaq</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" />
     <style>
-        /* --- CSS แถบเมนูแบบเดียวกับ homepage --- */
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f1f9f1;
-            margin: 0;
-            padding: 0;
-            transition: background-color 0.3s, color 0.3s;
-        }
-        body.dark {
-            background-color: #121212;
-            color: #f0f0f0;
-        }
-        .navbar {
-            background-color: #2e7d32;
-            color: white;
-            padding: 15px 30px;
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-        }
-        .navbar form {
-            flex: 1;
-            min-width: 200px;
-        }
-        .navbar input[type="text"] {
-            width: 100%;
-            padding: 10px;
-            border-radius: 8px;
-            border: none;
-        }
-        .navbar a {
-            color: white;
-            text-decoration: none;
-            font-weight: 600;
-            padding: 6px 10px;
-            border-radius: 8px;
-            transition: background-color 0.3s;
-        }
-        .navbar a:hover {
-            background-color: #1b5e20;
-        }
-        .language-select, .toggle-dark {
-            margin-left: 10px;
-            padding: 6px 10px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-        .language-toggle {
-            display: flex;
-            align-items: center;
-        }
-        .menu-links {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            width: 100%;
-            margin-top: 10px;
-        }
-
-        /* --- CSS ส่วนรายละเอียดสินค้า --- */
+        /* Style เฉพาะสำหรับ product detail */
         .product-container {
             max-width: 900px;
             margin: 40px auto;
@@ -84,9 +22,6 @@
             background-color: #333;
             color: #eee;
         }
-        .product-image {
-            flex: 1;
-        }
         .product-image img {
             width: 100%;
             border-radius: 16px;
@@ -99,47 +34,111 @@
             flex-direction: column;
         }
         .product-info h1 {
-            margin: 0 0 15px;
             font-size: 2.2rem;
+            margin-bottom: 15px;
         }
-        .product-info .price {
+        .price {
             font-size: 1.8rem;
             font-weight: 700;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             color: #388e3c;
         }
-        .product-info .description {
-            flex-grow: 1;
-            font-size: 1.1rem;
-            line-height: 1.5;
-            margin-bottom: 30px;
-        }
-        .btn-buy {
-            background-color: #2e7d32;
-            color: white;
-            padding: 15px 25px;
+        .sold-stock {
+            margin: 10px 0 15px 0;
             font-weight: 600;
-            font-size: 1.2rem;
+            color: #555;
+        }
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        /* กำหนดให้ปุ่ม buy กับ add-cart เท่ากัน */
+        .btn-buy, .btn-add-cart {
+            flex: 1;
+            padding: 15px 20px;
+            font-weight: 600;
+            font-size: 1.1rem;
             border: none;
             border-radius: 12px;
             cursor: pointer;
             transition: background-color 0.3s;
-            align-self: start;
+            background-color: #4caf50;
+            color: white;
         }
-        .btn-buy:hover {
-            background-color: #1b5e20;
+        .btn-buy:hover, .btn-add-cart:hover {
+            background-color: #357a38;
         }
-
-        /* Dark mode */
-        .dark .btn-buy {
+        body.dark .btn-buy {
             background-color: #81c784;
             color: #121212;
         }
-        .dark .btn-buy:hover {
+        body.dark .btn-buy:hover {
             background-color: #519657;
         }
+        body.dark .btn-add-cart {
+            background-color: #a5d6a7;
+            color: #121212;
+        }
+        body.dark .btn-add-cart:hover {
+            background-color: #7cb67e;
+        }
+        .description {
+            flex-grow: 1;
+            font-size: 1.1rem;
+            line-height: 1.5;
+            margin-top: 15px;
+        }
 
-        /* Responsive */
+        /* Modal styles */
+        .modal {
+          display: none; 
+          position: fixed; 
+          z-index: 1000; 
+          left: 0; top: 0;
+          width: 100%; height: 100%; 
+          overflow: auto; 
+          background-color: rgba(0,0,0,0.4);
+        }
+        .modal-content {
+          background-color: #e8f5e9;
+          color: #2e7d32;
+          margin: 15% auto;
+          padding: 20px;
+          border-radius: 16px;
+          width: 320px;
+          text-align: center;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+          font-weight: 600;
+          font-size: 1.2rem;
+          position: relative;
+        }
+        .close {
+          color: #2e7d32;
+          position: absolute;
+          right: 15px;
+          top: 10px;
+          font-size: 28px;
+          font-weight: bold;
+          cursor: pointer;
+        }
+        .close:hover {
+          color: #145214;
+        }
+        body.dark .modal-content {
+          background-color: #333;
+          color: #a5d6a7;
+        }
+
+        .modal-image {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            border-radius: 12px;
+            margin: 0 auto 10px auto;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
         @media (max-width: 768px) {
             .product-container {
                 flex-direction: column;
@@ -152,36 +151,9 @@
     </style>
 </head>
 <body>
-    <!-- แถบเมนูเหมือน homepage -->
-    <div class="navbar">
-        <div style="display: flex; align-items: center; gap: 15px;">
-            <a href="{% url 'homepage' %}" style="color:white; text-decoration: none; font-weight: bold;">🌱 Treevaq</a>
-        </div>
 
-        <div style="flex: 1; display: flex; align-items: center; gap: 15px; flex-wrap: wrap; justify-content: center;">
-            <a href="#" data-key="all">All</a>
-            <a href="#" data-key="best">Best Sellers</a>
-            <a href="#" data-key="promo">Eco Promotions</a>
-            <a href="#" data-key="sell">Sell</a>
+    {% include 'base2.html' %}  <!-- เรียก navbar มาใช้งาน -->
 
-            <form method="get" action="{% url 'homepage' %}" style="margin: 0;">
-                <input type="text" id="searchInput" name="q" placeholder="Search..." value="{{ request.GET.q }}"
-                       style="width: 250px; padding: 8px; border-radius: 8px; border: none;">
-            </form>
-        </div>
-
-        <div style="display: flex; align-items: center; gap: 10px;">
-            <select id="languageSelect" class="language-select">
-                <option value="en">EN</option>
-                <option value="th">TH</option>
-            </select>
-            <button id="toggleDark" class="toggle-dark">🌙</button>
-            <a href="{% url 'login' %}" style="color: white; font-size: 20px;">👤</a>
-            <a href="{% url 'homepage' %}" style="color: white; font-size: 20px;">🛒</a>
-        </div>
-    </div>
-
-    <!-- เนื้อหาสินค้า -->
     <div class="product-container">
         <div class="product-image">
             {% if product.image %}
@@ -192,68 +164,109 @@
         </div>
         <div class="product-info">
             <h1>{{ product.name }}</h1>
-            <div class="price">{{ product.price|default:"฿0" }}</div>
+            <div class="price">
+                {% if product.discounted_price and product.discounted_price < product.original_price %}
+                    <span style="text-decoration: line-through; color: gray;">฿{{ product.original_price }}</span>
+                    <span>฿{{ product.discounted_price }}</span>
+                    <span style="color: #e53935; font-weight: bold;">(-{{ product.discount_percent }}%)</span>
+                {% else %}
+                    <span>฿{{ product.original_price }}</span>
+                {% endif %}
+            </div>
+
+            <div class="sold-stock">
+                Sold: {{ product.sold|default:"0" }} &nbsp;&nbsp; Stock: {{ product.stock|default:"0" }}
+            </div>
+
+            <div class="btn-group">
+                <button class="btn-buy">Buy now</button>
+                <button id="addCartBtn" class="btn-add-cart">Add to Cart</button>
+            </div>
+
             <div class="description">{{ product.description|linebreaks }}</div>
-            <button class="btn-buy">ซื้อสินค้า</button>
         </div>
     </div>
 
-    <!-- JavaScript สำหรับเปลี่ยนภาษา และโหมดมืด -->
-    <script>
-        const translations = {
-            en: {
-                all: "All",
-                best: "Best Sellers",
-                promo: "Eco Promotions",
-                sell: "Sell",
-                placeholder: "Search for eco-friendly products..."
-            },
-            th: {
-                all: "ทั้งหมด",
-                best: "สินค้าขายดี",
-                promo: "โปรโมชั่นรักษ์โลก",
-                sell: "ขาย",
-                placeholder: "ค้นหาสินค้ารักษ์โลก..."
+    <!-- Modal แจ้งเตือน -->
+    <div id="cartModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" aria-describedby="modalDesc">
+      <div class="modal-content">
+        <span id="closeModal" class="close" aria-label="Close modal">&times;</span>
+        <img id="modalProductImage" class="modal-image" src="" alt="Product image" />
+        <p id="modalDesc">เพิ่ม <span id="addedQuantity">1</span> ชิ้น ลงในตะกร้าเรียบร้อยแล้ว! 🛒</p>
+      </div>
+    </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const addCartBtn = document.getElementById("addCartBtn");
+        const cartModal = document.getElementById("cartModal");
+        const closeModal = document.getElementById("closeModal");
+        const modalProductImage = document.getElementById("modalProductImage");
+        const addedQuantitySpan = document.getElementById("addedQuantity");
+
+        // สมมติว่าปุ่มใน navbar ที่แสดงจำนวนสินค้าในตะกร้า มี id="cartCount"
+        const cartCountElement = document.getElementById("cartCount");
+
+        function updateCartCount() {
+            let cart = JSON.parse(localStorage.getItem("cart")) || {};
+            let totalCount = 0;
+            for (const key in cart) {
+                totalCount += cart[key].quantity;
             }
-        };
-
-        const languageSelect = document.getElementById("languageSelect");
-        const toggleDark = document.getElementById("toggleDark");
-
-        function setLanguage(lang) {
-            localStorage.setItem("lang", lang);
-            document.querySelectorAll("[data-key]").forEach(el => {
-                const key = el.getAttribute("data-key");
-                if(translations[lang][key]) {
-                    el.textContent = translations[lang][key];
-                }
-            });
-            document.getElementById("searchInput").placeholder = translations[lang].placeholder;
-            languageSelect.value = lang;
+            if(cartCountElement) {
+                cartCountElement.textContent = totalCount;
+            }
         }
 
-        function toggleDarkMode() {
-            const isDark = document.body.classList.toggle("dark");
-            localStorage.setItem("darkMode", isDark ? "on" : "off");
-            toggleDark.textContent = isDark ? "☀️" : "🌙";
-        }
+        // อัปเดตจำนวนสินค้าใน navbar ตอนโหลดหน้า
+        updateCartCount();
 
-        document.addEventListener("DOMContentLoaded", () => {
-            const savedLang = localStorage.getItem("lang") || "en";
-            const dark = localStorage.getItem("darkMode") === "on";
+        addCartBtn.addEventListener("click", () => {
+            const productId = "{{ product.id }}";
+            const productName = "{{ product.name|escapejs }}";
+            const productPrice = {{ product.discounted_price|default:product.original_price }};
+            const productImage = "{% if product.image %}{{ product.image.url }}{% else %}{% static 'default_product.png' %}{% endif %}";
 
-            setLanguage(savedLang);
-            if (dark) {
-                document.body.classList.add("dark");
-                toggleDark.textContent = "☀️";
+            let cart = JSON.parse(localStorage.getItem("cart")) || {};
+
+            let addedQty = 1;
+            if(cart[productId]) {
+                cart[productId].quantity += 1;
+                addedQty = 1;
+            } else {
+                cart[productId] = {
+                    id: productId,
+                    name: productName,
+                    price: productPrice,
+                    image: productImage,
+                    quantity: 1
+                };
             }
 
-            languageSelect.addEventListener("change", (e) => {
-                setLanguage(e.target.value);
-            });
+            localStorage.setItem("cart", JSON.stringify(cart));
 
-            toggleDark.addEventListener("click", toggleDarkMode);
+            // อัปเดตจำนวนสินค้าใน navbar
+            updateCartCount();
+
+            // แสดง modal พร้อมรูปสินค้าและจำนวนที่เพิ่ม
+            modalProductImage.src = productImage;
+            modalProductImage.alt = productName;
+            addedQuantitySpan.textContent = addedQty;
+
+            cartModal.style.display = "block";
         });
-    </script>
+
+        closeModal.addEventListener("click", () => {
+            cartModal.style.display = "none";
+        });
+
+        window.addEventListener("click", (event) => {
+            if (event.target == cartModal) {
+                cartModal.style.display = "none";
+            }
+        });
+    });
+</script>
+
 </body>
 </html>
